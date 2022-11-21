@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  db:
+    container_name: db
+    enviroment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    restart: unless-stopped
+    image: mongo:latest
+    volumes:
+      - ./data:/data/db
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+  api:
+    environment:
+      - NODE_ENV=development
+    build:
+      context: .
+      # dockerfile: Dockerfile.dev
+    volumes:
+      - ./:/usr/app
+    container_name: api
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    command: npm run dev
