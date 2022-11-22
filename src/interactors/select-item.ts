@@ -1,29 +1,22 @@
 import GiftItemModel from "../models/gift-item";
-import UserModel, { IUser } from "../models/user";
 
 interface SelectItemInput {
 	_id: string;
+	qty: number;
 	ip?: string;
 }
 
-export default async function selectItemInteractor({ _id, ip }: SelectItemInput) {
-	console.log(_id, ip)
+export default async function selectItemInteractor({ _id, qty, ip }: SelectItemInput) {
 	if (_id&& ip) {
 		// Check that user does exist
-		const user = await UserModel.findOne({ip});
-		console.log(user,'Verification if the user')
 
-		if (!user) {
 			const gift = await GiftItemModel.findById(_id);
 			const currentQty = gift?.quantity;
+		if (gift) {
 
 			if (currentQty && currentQty > 0) {
-				await gift?.update({quantity:currentQty-1})
-				if (gift) {
-					const user = new UserModel({ itemSelected: _id, ip });
-					await user.save();
-					return { error: false, user }
-				}
+				await gift.update({quantity: currentQty - qty})
+				return { error: false }
 			}
 		}
 
